@@ -2,8 +2,9 @@ package application;
 
 import java.util.ArrayList;
 import java.util.Random;
-//hi
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,13 +32,19 @@ public class goFishGame extends Application {
     private Random rand;
     private ArrayList<Integer> playerScores;
     private int amountPlayers;
-    
+    private GoFishManager manager;
+    private boolean gameOn;
+    private int playerPicked;
+    private Card cardToCompare;
+    private playerCards currentPlayerCards;
+    private playerCards playerOneCards;
+   
+
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    
     private Button onePlayerButton, twoPlayerButton, threePlayerButton, fourPlayerButton;
 
     public void start(Stage stage) {
@@ -45,7 +52,7 @@ public class goFishGame extends Application {
         showMainMenu();
     }
 
-    private void showMainMenu() {
+    public void showMainMenu() {
         Label title = new Label("Go Fish");
         title.setStyle("-fx-font-size: 24px;");
 
@@ -56,7 +63,6 @@ public class goFishGame extends Application {
         quitButton.setOnAction(this::quitButton);
         
         Button showWin = new Button("Win");
-        showWin.setOnAction(this::winMenu);
 
         VBox layout = new VBox(15, title, playButton, quitButton, showWin);
         layout.setStyle("-fx-alignment: center; -fx-padding: 30;-fx-background-color: lightblue;");
@@ -66,8 +72,17 @@ public class goFishGame extends Application {
         primaryStage.show();
     }
     
-    private void winMenu(ActionEvent event) {
-    	Label title = new Label ("Player wins!");
+    private void winMenu() {
+    	int winner = 0;
+    	int winnerScore = 0;
+    	for(int i=0; i < playerScores.size(); i++) {
+    		if(playerScores.get(i) > winnerScore) {
+    			winner = i;
+    			winnerScore = playerScores.get(i);
+    		}
+    	}
+    	
+    	Label title = new Label ("Player " + winner + "Wins!!!");
     	title.setStyle("-fx-font-size: 24px;");
     	
     	Button playAgain = new Button("Play Again?");
@@ -75,9 +90,6 @@ public class goFishGame extends Application {
     	
     	Button backToMenu = new Button("Back to Menu");
     	backToMenu.setOnAction(this::backToMenu);
-    	
-//    	Button assignCards = new Button("Assign Player1 Cards");
-//    	assignCards.setOnAction(this::assignPlayerCards);
     	
     	VBox layout = new VBox(15, title, playAgain, backToMenu);
     	layout.setStyle("-fx-alignment: center; -fx-padding: 30;-fx-background-color: lightblue;");
@@ -88,83 +100,152 @@ public class goFishGame extends Application {
     	
     }
     
-    private void twoPlayer(ActionEvent event) {
-    	amountPlayers = 2;
-    	
+    private void startGame(ActionEvent e) {
+    	playersCards.clear();
+    	manager = new GoFishManager(amountPlayers);
     	deck.assignCards(amountPlayers, playersCards);
+    	playerScores = new ArrayList<Integer>();    	
     	
-    	GridPane gridPane = new GridPane();
+    	for(int i=0; i < amountPlayers; i++) {
+    		playerScores.add(0);
+    	}
     	
-    	 gridPane.setPadding(new Insets(20));        
-    	    gridPane.setHgap(50);                      
-    	    gridPane.setVgap(10);                       
-    	    gridPane.setAlignment(Pos.CENTER);
+    	gameOn = true;
     	
-    	Text firstPlayerCards = new Text("PLAYER 1 CARDS\n" + playersCards.get(0).toString());
-    	Text secondPlayerCards = new Text("PLAYER 2 CARDS\n" + playersCards.get(1).toString());
-    	
-   
-    	
-    	gridPane.add(firstPlayerCards, 0, 0);
-    	gridPane.add(secondPlayerCards, 0, 1);
-    	
-    	Scene scene = new Scene(gridPane, 600, 400);
-    	
-    	
-    	
-    	primaryStage.setScene(scene);
-    	primaryStage.setTitle("Go Fish");
-    	primaryStage.show();
-    	
+    	startTurn();  	
     }
     
-    private void threePlayer(ActionEvent event) {
-    	amountPlayers = 3;
+    private void startTurn() {
+    	playerOneCards = playersCards.get(0);
+    	playerCards opponentCards = playersCards.get(1);
     	
-    	deck.assignCards(amountPlayers, playersCards);
+    	System.out.println("Player 1 Cards");
+    	for(int i=0; i < playerOneCards.size(); i++ ) {
+    		System.out.println(playerOneCards.getRank(i));
+    	}
+    	System.out.println("Player 2 Cards"); 
+    	for(int i=0; i < opponentCards.size(); i++) {
+    		System.out.println(opponentCards.getRank(i));
+    	}
     	
-    	GridPane gridPane = new GridPane();
-    	
-    	 gridPane.setPadding(new Insets(20));        
-    	    gridPane.setHgap(50);                      
-    	    gridPane.setVgap(10);                       
-    	    gridPane.setAlignment(Pos.CENTER);
-    	
-    	Text firstPlayerCards = new Text("PLAYER 1 CARDS\n" + playersCards.get(0).toString());
-    	Text secondPlayerCards = new Text("PLAYER 2 CARDS\n" + playersCards.get(1).toString());
-    	Text thirdPlayerCards = new Text("PLAYER 3 CARDS\n" + playersCards.get(2).toString());
-    	
-   
-    	
-    	gridPane.add(firstPlayerCards, 1, 1);
-    	gridPane.add(secondPlayerCards, 2, 2);
-    	gridPane.add(thirdPlayerCards, 2, 0);
-    	
-    	Scene scene = new Scene(gridPane, 600, 400);
-    	
-    	
-    	
-    	primaryStage.setScene(scene);
-    	primaryStage.setTitle("Go Fish");
-    	primaryStage.show();
-    }
-    
-    private void fourPlayer(ActionEvent event) {
-    	amountPlayers = 4;
-    	Image cards = new Image("pngtree-spades-hearts-playing-cards-clip-art-png-image_2962158.jpg");
-    	ImageView image = new ImageView(cards);
-    	
-    	VBox layout = new VBox(image);
-    	
-    	primaryStage.setScene(new Scene(layout,300,300));
-    	
-    }
-    
-    private void startGame() {
-    	
+    	pickPlayer();
     }
 
+    private void pickPlayer() {
+    	    GridPane grid = new GridPane();
+    	    
+    	    for(int i=0; i < amountPlayers; i++) {
+    	    	int index = i;
+    	    	Button button = new Button("Player: " + (i));
+    	    	button.setOnAction(e -> {
+    	    		playerPicked = index;
+    	    		pickCardForAsk();
+    	    	});
+    	    	grid.add(button, i, 0);
+    	    	}
+        	System.out.print(manager.getCurrentPlayer());
+    	    
+    	    primaryStage.setScene(new Scene(grid, 300, 300));
+        	primaryStage.setTitle("Go Fish");
+        	primaryStage.show();
+    
+    }
+    
+
+
+    
+    private void pickCardForAsk() {
+    	GridPane grid = new GridPane();
+ // 	Pick card to compare
+    	    	
+    	currentPlayerCards = playersCards.get(manager.getCurrentPlayer());
+    	
+    	for(int j=0; j < currentPlayerCards.size(); j++) {
+    		int index = j;
+    		String rank = currentPlayerCards.getRank(index);
+    		Button button = new Button(rank);
+    		button.setOnAction(e -> {
+    			cardToCompare = currentPlayerCards.getCard(index);
+    			compare();
+    		});
+    		grid.add(button, j, 0);
+    	}
+
+    	primaryStage.setScene(new Scene(grid, 300, 300));
+      	primaryStage.setTitle("Go Fish");
+      	primaryStage.show();
+    }
+    
+    private void compare() { 
+    	System.out.println("Player " + manager.getCurrentPlayer() + " asking for rank: " + cardToCompare.getRank());
+       	for (int i = 0; i < playersCards.get(playerPicked).size(); i++) {
+       	    Card opponentCard = playersCards.get(playerPicked).getCard(i);
+       	    System.out.println("Opponent's card rank: " + opponentCard.getRank());
+
+       	    if (manager.compareCards(cardToCompare, opponentCard)) {
+       	        System.out.println("MATCH FOUND: " + opponentCard.getRank());
+       	    }
+       	}
+
+    	ArrayList<Card> cardsForTransfer = new ArrayList<>();
+    	
+    	
+   	for(int i=0; i < playersCards.get(manager.getOpponent()).size(); i++) {
+    		if(manager.compareCards(cardToCompare, playersCards.get(manager.getOpponent()).getCard(i))) {
+    			cardsForTransfer.add(playersCards.get(manager.getOpponent()).getCard(i));
+    		}
+    	}
+   	
+   	for(Card card : cardsForTransfer) {
+   		playersCards.get(manager.getCurrentPlayer()).addCard(card);
+   		playersCards.get(manager.getOpponent()).removeCard(card);
+   	}
+   	
+   	if(cardsForTransfer.size() == 0) {
+   		drawCard(manager.getCurrentPlayer());
+   	}
+   	
+   	for(int i=0; i < playersCards.size(); i++) {
+   		if(manager.checkForAllRank(playersCards.get(i))) {
+   			int currentValue = playerScores.get(i);
+   			playerScores.set(i, currentValue + 1);
+   		}
+   	}
+   	
+   	for(int i=0; i < playersCards.size(); i++) {
+   		if(playersCards.get(i).isEmpty() && !deck.isEmpty()) {
+   			deck.addCards(playersCards.get(i));
+   		}
+   	}
+   	
+   
+   	System.out.println(manager.getCurrentPlayer());
+   	checkWin();
+    manager.nextTurn();
+   	startTurn();
+    }
+    
+    
+    private void checkWin() {
+		boolean allHandsEmpty = false;
+
+
+    	int endCondition = 0;
+    	for(int i=0; i < playersCards.size(); i++) {
+    		if(playersCards.get(i).size() == 0) {
+    			endCondition++;
+    		}
+    	}
+
+    	if(endCondition == playersCards.size()) {
+    		allHandsEmpty = true;
+    		winMenu();
+    	}
+    	System.out.println("\nChecking win: allHandsEmpty=" + allHandsEmpty + ", deckEmpty=" + deck.isEmpty());
+    }
+    
     private void playButton(ActionEvent event) {
+    	
         Label label = new Label("Choose number of players:");
         VBox layout = new VBox(10, label);
         layout.setStyle("-fx-alignment: center; -fx-padding: 10; -fx-background-color: lightblue;");
@@ -174,10 +255,18 @@ public class goFishGame extends Application {
         threePlayerButton = new Button("3 Players");
         fourPlayerButton = new Button("4 Players");
 
-        onePlayerButton.setOnAction(this::winMenu);
-        twoPlayerButton.setOnAction(this::twoPlayer);
-        threePlayerButton.setOnAction(this::threePlayer);
-        fourPlayerButton.setOnAction(this::fourPlayer);
+        twoPlayerButton.setOnAction(e -> {
+        	amountPlayers = 2;
+        	startGame(e);
+        });
+        threePlayerButton.setOnAction(e -> {
+        	amountPlayers = 3;
+        	startGame(e);
+        });
+        fourPlayerButton.setOnAction(e -> {
+            amountPlayers = 4; 
+            startGame(e);
+        });
 
         layout.getChildren().addAll(onePlayerButton, twoPlayerButton, threePlayerButton, fourPlayerButton);
         primaryStage.setScene(new Scene(layout, 300, 300));
@@ -200,25 +289,9 @@ public class goFishGame extends Application {
         primaryStage.setScene(new Scene(layout, 300, 300));
     }
     
-//    private void assignPlayerCards() {
-//    	for(int i=0; i < amountPlayers; i++) {
-//    		playersCards.add(new playerCards());
-//    	}
-//    	rand = new Random();
-//    	for(int i=0; i < playersCards.size() ;i++) {
-//    		
-//    	
-//    	for(int j=0; j < 5; j++) {
-//    		playersCards.get(i).addCard(Deck.getCard(rand.nextInt(52)));
-//    	}
-//    	
-//    	}
-//    	
-//    	for(int i=0; i < playersCards.size(); i++) {
-//    		System.out.println(playersCards.get(i).toString());
-//    	}
-//    	
-//    }
+    private void drawCard(int playerIndex) {
+    	playersCards.get(playerIndex).addCard(deck.getRandomCard());
+    }
     
 
     private void backToMenu(ActionEvent event) {

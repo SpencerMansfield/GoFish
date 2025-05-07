@@ -3,12 +3,10 @@ package application;
 public class Card {
 	private String suit;
 	private String rank;
-	private int value;
 	
-	public Card(String suit, String rank, int value) {
+	public Card(String suit, String rank) {
 		this.suit = suit;
 		this.rank = rank;
-		this.value = value;
 	}
 
 	public String getSuit() {
@@ -23,6 +21,14 @@ public class Card {
 	public void setNumber(String rank) {
 		this.rank = rank;
 	}
+	@Override
+	public boolean equals(Object obj) {
+	    if (this == obj) return true;
+	    if (obj == null || getClass() != obj.getClass()) return false;
+	    Card card = (Card) obj;
+	    return this.rank.equals(card.rank) && this.suit.equals(card.suit);
+	}
+
 	
 	public String toString() {
 		String str = "";

@@ -10,14 +10,15 @@ public class Deck {
 	private final int numOfEachSuit = 13;
 	private final String[] ranks = {"2","3","4","5","6","7","8","9","10","Jack","Queen","King","Ace"};
 	private final String[] suits = {"Clubs", "Hearts", "Diamonds", "Spades"};
-	static ArrayList<Card> GameDeck = new ArrayList<>();
-	private Random rand;
+	private ArrayList<Card> GameDeck = new ArrayList<>();
+	private Random rand = new Random();
+	private int randInt;
 	
 	
 	public Deck() {
 		for (String suit : suits) {
 			for (String rank: ranks) {
-				Card GameCard = new Card(suit, rank, rank.indexOf(numOfEachSuit));
+				Card GameCard = new Card(suit, rank);
 				GameDeck.add(GameCard);
 			}
 		}
@@ -26,7 +27,7 @@ public class Deck {
 				
 			}
 		}
-		Collections.shuffle(GameDeck);
+//		Collections.shuffle(GameDeck);
 		
 	}
 	
@@ -34,13 +35,12 @@ public class Deck {
 		for(int i=0; i < numPlayers; i++) {
     		allPlayersCards.add(new playerCards());
     	}
-		rand = new Random();
 		for(int i=0; i < numPlayers ;i++) {
 	    	
 	    	for(int j=0; j < 5; j++) {
-	    		int randInt = rand.nextInt(Deck.size());
-	    		allPlayersCards.get(i).addCard(Deck.getCard(randInt));
-	    		Deck.remove(randInt);
+	    		randInt = rand.nextInt(GameDeck.size());
+	    		allPlayersCards.get(i).addCard(GameDeck.get(randInt));
+	    		GameDeck.remove(randInt);
 	    		
 	    	}
 	    	
@@ -49,24 +49,42 @@ public class Deck {
 		for(int i=0; i < numPlayers; i++) {
 			allPlayersCards.get(i).toString();
 		}
-		
-		
 	}
 	
-	public static String getCardRank(int place) {
+	public void addCards(playerCards player) {
+		if(player.isEmpty()) {
+			for(int i = 0; i < 5; i++) {
+				randInt = rand.nextInt(GameDeck.size());
+				player.addCard(GameDeck.get(randInt));
+			}
+		}
+	}
+		
+	public Card getRandomCard() {
+		
+		randInt = rand.nextInt(GameDeck.size());
+		
+		return GameDeck.remove(randInt);		
+	}
+	
+	public String getCardRank(int place) {
 		return GameDeck.get(place).getRank();
 	}
-	public static String getCardSuit(int place) {
+	public String getCardSuit(int place) {
 		return GameDeck.get(place).getSuit();
 	}
-	public static Card getCard(int place) {
+	public Card getCard(int place) {
 		return GameDeck.get(place);
 	}
-	public static void remove(int place) {
+	public void remove(int place) {
 		GameDeck.remove(place);
 	}
-	public static int size() {
+	public int size() {
 	 return GameDeck.size();
+	}
+	
+	public boolean isEmpty() {
+		return GameDeck.isEmpty();
 	}
 	
 	public String toString() {
