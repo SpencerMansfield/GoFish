@@ -168,7 +168,19 @@ public class goFishGame extends Application {
     	for(int j=0; j < currentPlayerCards.size(); j++) {
     		int index = j;
     		String rank = currentPlayerCards.getRank(index);
-    		Button button = new Button(rank);
+		String suit = currentPlayerCards.getCard(index).getSuit();
+		String fileName = "/" + rank.toLowerCase() + "_of_" + suit.toLowerCase() + ".png";
+		InputStream img = getClass().getResourceAsStream(fileName);
+		if (img == null) {
+         System.err.println("Image not found: " + fileName);	          
+         continue;  
+        }
+		Image cardImage = new Image(img);
+			ImageView cardImageView = new ImageView(cardImage);
+			cardImageView.setFitWidth(100);
+			cardImageView.setFitHeight(150);
+    		Button button = new Button();
+		button.setGraphic(cardImageView);
     		button.setOnAction(e -> {
     			cardToCompare = currentPlayerCards.getCard(index);
     			compare();
