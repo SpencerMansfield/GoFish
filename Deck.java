@@ -53,9 +53,10 @@ public class Deck {
 	
 	public void addCards(playerCards player) {
 		if(player.isEmpty()) {
-			for(int i = 0; i < 5; i++) {
+			for(int i = 0; i < GameDeck.size(); i++) {
 				randInt = rand.nextInt(GameDeck.size());
 				player.addCard(GameDeck.get(randInt));
+				GameDeck.remove(i);
 			}
 		}
 	}

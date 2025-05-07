@@ -63,10 +63,9 @@ public class GoFishManager {
 	            }
 	        }
 
-	        if (count == 4) {
+	        if (count >= 4) {
 	            ArrayList<Card> cardsToRemove = new ArrayList<>();
-
-	            for (int j = 0; j < player.size(); j++) {
+	            for (int j = 0; j < player.size() && cardsToRemove.size() < 4; j++) {
 	                if (rankToCheck.equals(player.getRank(j))) {
 	                    cardsToRemove.add(player.getCard(j));
 	                }

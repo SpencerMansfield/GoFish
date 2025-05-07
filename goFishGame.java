@@ -73,31 +73,32 @@ public class goFishGame extends Application {
     }
     
     private void winMenu() {
-    	int winner = 0;
-    	int winnerScore = 0;
-    	for(int i=0; i < playerScores.size(); i++) {
-    		if(playerScores.get(i) > winnerScore) {
-    			winner = i;
-    			winnerScore = playerScores.get(i);
-    		}
-    	}
-    	
-    	Label title = new Label ("Player " + winner + "Wins!!!");
-    	title.setStyle("-fx-font-size: 24px;");
-    	
-    	Button playAgain = new Button("Play Again?");
-    	playAgain.setOnAction(this::playButton);
-    	
-    	Button backToMenu = new Button("Back to Menu");
-    	backToMenu.setOnAction(this::backToMenu);
-    	
-    	VBox layout = new VBox(15, title, playAgain, backToMenu);
-    	layout.setStyle("-fx-alignment: center; -fx-padding: 30;-fx-background-color: lightblue;");
-    	
-    	primaryStage.setScene(new Scene(layout, 300, 300));
-    	primaryStage.setTitle("Go Fish");
-    	primaryStage.show();
-    	
+        System.out.println("Win condition met, showing win menu...");
+        
+        int winner = 0;
+        int winnerScore = 0;
+        for (int i = 0; i < playerScores.size(); i++) {
+            if (playerScores.get(i) > winnerScore) {
+                winner = i;
+                winnerScore = playerScores.get(i);
+            }
+        }
+
+        Label title = new Label("Player " + winner + " Wins!!!");
+        title.setStyle("-fx-font-size: 24px;");
+
+        Button playAgain = new Button("Play Again?");
+        playAgain.setOnAction(this::playButton);
+
+        Button backToMenu = new Button("Back to Menu");
+        backToMenu.setOnAction(this::backToMenu);
+
+        VBox layout = new VBox(15, title, playAgain, backToMenu);
+        layout.setStyle("-fx-alignment: center; -fx-padding: 30;-fx-background-color: lightblue;");
+
+        primaryStage.setScene(new Scene(layout, 300, 300));
+        primaryStage.setTitle("Go Fish");
+        primaryStage.show();
     }
     
     private void startGame(ActionEvent e) {
@@ -136,13 +137,16 @@ public class goFishGame extends Application {
     	    
     	    for(int i=0; i < amountPlayers; i++) {
     	    	int index = i;
-    	    	Button button = new Button("Player: " + (i));
-    	    	button.setOnAction(e -> {
-    	    		playerPicked = index;
-    	    		pickCardForAsk();
-    	    	});
-    	    	grid.add(button, i, 0);
+    	    	if (i != manager.getCurrentPlayer()) {
+    	    		Button button = new Button("Player: " + (i));
+        	    	button.setOnAction(e -> {
+          	    		playerPicked = index;
+        	    		pickCardForAsk();
+        	    	});
+        	    	grid.add(button, i, 0);
+        	    	}
     	    	}
+    	    	
         	System.out.print(manager.getCurrentPlayer());
     	    
     	    primaryStage.setScene(new Scene(grid, 300, 300));
@@ -159,6 +163,7 @@ public class goFishGame extends Application {
  // 	Pick card to compare
     	    	
     	currentPlayerCards = playersCards.get(manager.getCurrentPlayer());
+    	
     	
     	for(int j=0; j < currentPlayerCards.size(); j++) {
     		int index = j;
@@ -177,12 +182,14 @@ public class goFishGame extends Application {
     }
     
     private void compare() { 
+    	boolean matchFound = false;
     	System.out.println("Player " + manager.getCurrentPlayer() + " asking for rank: " + cardToCompare.getRank());
        	for (int i = 0; i < playersCards.get(playerPicked).size(); i++) {
        	    Card opponentCard = playersCards.get(playerPicked).getCard(i);
        	    System.out.println("Opponent's card rank: " + opponentCard.getRank());
 
        	    if (manager.compareCards(cardToCompare, opponentCard)) {
+       	    	matchFound = true;
        	        System.out.println("MATCH FOUND: " + opponentCard.getRank());
        	    }
        	}
@@ -190,16 +197,21 @@ public class goFishGame extends Application {
     	ArrayList<Card> cardsForTransfer = new ArrayList<>();
     	
     	
-   	for(int i=0; i < playersCards.get(manager.getOpponent()).size(); i++) {
-    		if(manager.compareCards(cardToCompare, playersCards.get(manager.getOpponent()).getCard(i))) {
-    			cardsForTransfer.add(playersCards.get(manager.getOpponent()).getCard(i));
-    		}
+    	for (int i = 0; i < playersCards.get(manager.getOpponent()).size(); i++) {
+    	    Card card = playersCards.get(manager.getOpponent()).getCard(i);
+    	    if (manager.compareCards(cardToCompare, card)) {
+    	        cardsForTransfer.add(card);
+    	    }
     	}
    	
-   	for(Card card : cardsForTransfer) {
-   		playersCards.get(manager.getCurrentPlayer()).addCard(card);
-   		playersCards.get(manager.getOpponent()).removeCard(card);
-   	}
+    	for (Card card : cardsForTransfer) {
+    	    playersCards.get(manager.getOpponent()).removeCard(card);
+    	}
+
+    	for (Card card : cardsForTransfer) {
+    	    playersCards.get(manager.getCurrentPlayer()).addCard(card);
+    	}
+    	
    	
    	if(cardsForTransfer.size() == 0) {
    		drawCard(manager.getCurrentPlayer());
@@ -219,28 +231,28 @@ public class goFishGame extends Application {
    	}
    	
    
-   	System.out.println(manager.getCurrentPlayer());
-   	checkWin();
+   	System.out.println("\n" + manager.getCurrentPlayer() + "\n");
+   	for(int i=0; i < deck.size(); i++ ) {
+   		System.out.println(deck.getCard(i).getRank());
+   	}
+   	
+   	if(!matchFound) {
     manager.nextTurn();
+   	}
    	startTurn();
+   	checkWin();
+
     }
     
     
     private void checkWin() {
 		boolean allHandsEmpty = false;
 
-
-    	int endCondition = 0;
-    	for(int i=0; i < playersCards.size(); i++) {
-    		if(playersCards.get(i).size() == 0) {
-    			endCondition++;
-    		}
-    	}
-
-    	if(endCondition == playersCards.size()) {
+    	if(playersCards.get(0).size() == 0 && playersCards.get(1).size() == 0) {
     		allHandsEmpty = true;
     		winMenu();
     	}
+    	
     	System.out.println("\nChecking win: allHandsEmpty=" + allHandsEmpty + ", deckEmpty=" + deck.isEmpty());
     }
     
@@ -290,7 +302,11 @@ public class goFishGame extends Application {
     }
     
     private void drawCard(int playerIndex) {
-    	playersCards.get(playerIndex).addCard(deck.getRandomCard());
+        if (!deck.isEmpty()) {
+            playersCards.get(playerIndex).addCard(deck.getRandomCard());
+        } else {
+            System.out.println("Deck is empty, cannot draw any more cards.");
+        }
     }
     
 
