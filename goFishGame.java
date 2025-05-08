@@ -7,6 +7,7 @@ import java.util.Random;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -122,7 +123,7 @@ public class goFishGame extends Application {
             }
         }
 
-        Label title = new Label("Player " + winner + " Wins!!!");
+        Label title = new Label("Player " + (winner + 1) + " Wins!!!");
         title.setStyle("-fx-font-size: 24px;");
 
         Button playAgain = new Button("Play Again?");
@@ -149,9 +150,7 @@ public class goFishGame extends Application {
     	for(int i=0; i < amountPlayers; i++) {
     		playerScores.add(0);
     	}
-    	
-    	gameOn = true;
-    	
+    	    	
     	startTurn();  	
     }
     
@@ -172,45 +171,51 @@ public class goFishGame extends Application {
     }
 
     private void pickPlayer() {
-    	   // GridPane grid = new GridPane();
-    	    System.out.print(manager.getCurrentPlayer());
-    	   
+    		FlowPane centerPane = new FlowPane();
+//    	    System.out.print(manager.getCurrentPlayer());
+          	primaryStage.setMaximized(true);
+        	Label message = new Label("             Player " + (manager.getCurrentPlayer() + 1) + "'s Turn");
+        	Label messageTwo = new Label ("Select a Player to Ask for a Card");
+    	    message.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 25));  
+    	    messageTwo.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 25));   
+
+
+        	VBox vbox = new VBox();
+        	vbox.getChildren().add(message);
+        	vbox.getChildren().add(messageTwo);
+        	
+        	
+        	FlowPane topPane = new FlowPane(vbox);
+        	topPane.setHgap(10);
+        	topPane.setAlignment(Pos.TOP_CENTER);
+	    	topPane.setStyle("-fx-background-color: lightblue");
+
+        	
+        	BorderPane borderPane = new BorderPane();
+        	borderPane.setTop(topPane);
+        	borderPane.setCenter(centerPane);
+        	
+        	primaryStage.setScene(new Scene(borderPane, 1300, 1000));
+          	primaryStage.setTitle("Go Fish");
+        	primaryStage.show();
     	    
     	    for(int i=0; i < amountPlayers; i++) {
     	    	int index = i;
     	    	if (i != manager.getCurrentPlayer()) {
-    	    		
-    	    		
-    	    		Button button = new Button("Continue");
+    	    		Button button = new Button("Player: " + (i + 1));
         	    	button.setOnAction(e -> {
           	    		playerPicked = index;
         	    		pickCardForAsk();
         	    	});
-        	    	Text message = new Text("Player " + (i+1));
-        	    	VBox vbox = new VBox(20, message, button);
-        	    	vbox.setAlignment(Pos.CENTER);
-        	    	vbox.setStyle("-fx-background-color: lightblue;");
-        	    	 
-        	    	 message.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));   
-        	     	   message.setFill(Color.AQUA);
-        	     	    message.setStrokeWidth(2); 
-        	     	   message.setStroke(Color.BLUE);
-        	    	 vbox.setPadding(new Insets(100, 400, 400, 100));
-        	        vbox.setPrefSize(1500, 1000); 
-//        	    	grid.add(button, i, 0);
-//        	    	grid.add(new TextField("Player " +(i+1)), i, 1);
+        	    	centerPane.getChildren().add(button);
 //        	    	grid.setAlignment(Pos.CENTER);
-//        	    	grid.setStyle("-fx-background-color: lightblue");
-//     
-//        	    	grid.setPadding(new Insets(100, 400, 400, 100));
-        	        Scene scene = new Scene(vbox, 1500, 1000);
-                    primaryStage.setScene(scene);
-                    primaryStage.setTitle("Go Fish");
-                    primaryStage.setMaximized(true); 
-                    primaryStage.show();
+        	    	centerPane.setStyle("-fx-background-color: lightblue");
+        	    	
+        	    	centerPane.setAlignment(Pos.CENTER);
+     
+        	    	centerPane.setPadding(new Insets(100, 100, 400, 100));
         	    	}
-    	    	}
-    	    }
+    	    	}}
     	    	
 //        	System.out.print(manager.getCurrentPlayer());
 //          	primaryStage.setMaximized(true);
@@ -226,15 +231,16 @@ public class goFishGame extends Application {
 
     
     private void pickCardForAsk() {
+    	FlowPane pane = new FlowPane();
     	GridPane grid = new GridPane();
  // 	Pick card to compare
     	    	
     	currentPlayerCards = playersCards.get(manager.getCurrentPlayer());
     	Text currentPlayersTurn = new Text();
     	//currentPlayersTurn.setText("Player " + (manager.getCurrentPlayer() + 1 ) + "'s Turn");
-    	grid.setHgap(10);
-    	grid.setVgap(10);
-    	grid.setAlignment(Pos.CENTER_LEFT);
+    	pane.setHgap(10);
+    	pane.setVgap(10);
+    	pane.setAlignment(Pos.CENTER_LEFT);
     	
     	for(int j=0; j < currentPlayerCards.size(); j++) {
     		int index = j;
@@ -256,18 +262,17 @@ public class goFishGame extends Application {
     			cardToCompare = currentPlayerCards.getCard(index);
     			compare();
     		});
-    		grid.add(button, j, 0);
+    		pane.getChildren().add(button);
     	}
-    	grid.add(currentPlayersTurn, 5, 0);
-    	ScrollPane scroll1 = new ScrollPane(grid);
+    	ScrollPane scroll1 = new ScrollPane(pane);
     	scroll1.setFitToWidth(true);
     	scroll1.setFitToHeight(true);
     	 scroll1.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); 
            
     	primaryStage.setScene(new Scene(scroll1, 1500, 1000));
-    	grid.setAlignment(Pos.CENTER);
-    	grid.setPadding(new Insets(100, 400, 400, 100));
-    	grid.setStyle("-fx-background-color: lightblue");
+    	pane.setAlignment(Pos.CENTER);
+    	pane.setPadding(new Insets(100, 400, 400, 100));
+    	pane.setStyle("-fx-background-color: lightblue");
       	primaryStage.setTitle("Go Fish");
       	primaryStage.setMaximized(true);
       	primaryStage.show();
@@ -276,14 +281,14 @@ public class goFishGame extends Application {
     private void compare() {
     	matchFound = false;
 
-    	System.out.println("Player " + manager.getCurrentPlayer() + " asking for rank: " + cardToCompare.getRank());
+//    	System.out.println("Player " + manager.getCurrentPlayer() + " asking for rank: " + cardToCompare.getRank());
        	for (int i = 0; i < playersCards.get(playerPicked).size(); i++) {
        	    Card opponentCard = playersCards.get(playerPicked).getCard(i);
-       	    System.out.println("Opponent's card rank: " + opponentCard.getRank());
+//       	    System.out.println("Opponent's card rank: " + opponentCard.getRank());
 
        	    if (manager.compareCards(cardToCompare, opponentCard)) {
        	    	matchFound = true;
-       	        System.out.println("MATCH FOUND: " + opponentCard.getRank());
+//       	        System.out.println("MATCH FOUND: " + opponentCard.getRank());
        	    }
        	}
 
@@ -315,6 +320,7 @@ public class goFishGame extends Application {
    			int currentValue = playerScores.get(i);
    			playerScores.set(i, currentValue + 1);
    		}
+   		
    	}
    	
    	for(int i=0; i < playersCards.size(); i++) {
@@ -327,46 +333,50 @@ public class goFishGame extends Application {
    	if(!matchFound) {
     manager.nextTurn();
    	}
+   	currentPlayerCards = playersCards.get(manager.getCurrentPlayer()); 
+   	if (manager.checkForAllRank(currentPlayerCards)) {
+   	    allRankFound();
+   	}
+   	System.out.println(manager.checkForAllRank(currentPlayerCards));
+
+   	for(int i =0; i < playerScores.size(); i++) {
+   		System.out.println("\n" + playerScores.get(i));
+   	}
+   	
    	nextTurnIntermediary();
    	checkWin();
 
+}
+    
+    private void allRankFound() {
+    	VBox box = new VBox();
+    	Text text = new Text("Four of a Rank found by " + manager.getCurrentPlayer());
+    	Button button = new Button("Continue");
+    	button.setOnAction(this::nextTurnIntermediary);
+    	
+    	box.getChildren().add(text);
+    	box.getChildren().add(button);
+
+    	
+    	Scene scene = new Scene(box, 1500, 1000);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Go Fish");
+        primaryStage.setMaximized(true); 
+        primaryStage.show();
+    	
     }
     
     private void nextTurnIntermediary() {
     	if(!matchFound) {
-//    	Text text = new Text();
-//    	text.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));   
-// 	    text.setFill(Color.AQUA);
-// 	    text.setStrokeWidth(2); 
-// 	    text.setStroke(Color.BLUE);
-//    	text.setText("No match, Go Fish");
+
     	Label message = new Label("No match, go fish");
     	message.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));
-    	message.setTextFill(Color.AQUA);
-    	message.setStyle("-fx-text-fill: aqua; -fx-effect: dropshadow(one-pass-box, blue, 2, 1, 0, 0);");
+    	message.setStyle("-fx-text-fill: black; -fx-effect: dropshadow(one-pass-box, blue, 2, 1, 0, 0);");
     	Button button = new Button("Click to Continue");
     	button.setOnAction(e -> {
     		startTurn();
     	});
     	
-//      	Pane topPane = new Pane(text);
-//    	Pane centerPane = new Pane(button);
-//    	
-//    	
-//    	
-//    	BorderPane borderpane = new BorderPane();
-//    	borderpane.setTop(topPane);
-//    	borderpane.setCenter(centerPane);
-//    	
-//    	Scene scene = new Scene(borderpane, 1500, 1000);
-//    	
-//    	
-//    	primaryStage.setScene(scene);
-//      	primaryStage.setTitle("Go Fish");
-//      	primaryStage.setX(0);
-//      	primaryStage.setY(0);
-//    	primaryStage.show();
-//    
     	VBox vbox = new VBox(20, message, button);
     	vbox.setAlignment(Pos.CENTER);
     	vbox.setStyle("-fx-background-color: lightblue;");
@@ -378,13 +388,12 @@ public class goFishGame extends Application {
         primaryStage.setTitle("Go Fish");
         primaryStage.setMaximized(true); 
         primaryStage.show();
-    	}
+     	}
+    	
     	else {
     		Text text = new Text();
         	text.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));   
-     	    text.setFill(Color.AQUA);
      	    text.setStrokeWidth(2); 
-     	    text.setStroke(Color.BLUE);
         	text.setText("Match Found! Go Again");
         	
         	Button button = new Button("Click to Continue");
@@ -402,24 +411,59 @@ public class goFishGame extends Application {
             primaryStage.setTitle("Go Fish");
             primaryStage.setMaximized(true); 
             primaryStage.show();
+        
+        
+    	}
+    	
+    
+    	
+    }
+    private void nextTurnIntermediary(ActionEvent event) {
+    	if(!matchFound) {
+
+    	Label message = new Label("No match, go fish");
+    	message.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));
+    	message.setStyle("-fx-text-fill: black; -fx-effect: dropshadow(one-pass-box, blue, 2, 1, 0, 0);");
+    	Button button = new Button("Click to Continue");
+    	button.setOnAction(e -> {
+    		startTurn();
+    	});
+    	
+
+    	VBox vbox = new VBox(20, message, button);
+    	vbox.setAlignment(Pos.CENTER);
+    	vbox.setStyle("-fx-background-color: lightblue;");
+    	 vbox.setPadding(new Insets(100, 400, 400, 100));
+        vbox.setPrefSize(1500, 1000); 
+
+        Scene scene = new Scene(vbox, 1500, 1000);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Go Fish");
+        primaryStage.setMaximized(true); 
+        primaryStage.show();
+     	}
+    	
+    	else {
+    		Text text = new Text();
+        	text.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));   
+     	    text.setStrokeWidth(2); 
+        	text.setText("Match Found! Go Again");
         	
-//          	Pane topPane = new FlowPane(text);
-//        	Pane centerPane = new FlowPane(button);
-//        	
-//        	BorderPane borderpane = new BorderPane();
-//        	borderpane.setTop(topPane);
-//        	borderpane.setCenter(centerPane);
-//        	
-//        	Scene scene = new Scene(borderpane, 1500, 1500);
-        	
-//            primaryStage.setFullScreen(true);
-//
-//          	primaryStage.setTitle("Go Fish");
-//          	primaryStage.setX(0);
-//          	primaryStage.setY(0);
-//        	primaryStage.setScene(scene);
-//        	primaryStage.setMaximized(true);
-//        	primaryStage.show();
+        	Button button = new Button("Click to Continue");
+        	button.setOnAction(e -> {
+        		startTurn();
+        	});
+        	VBox vbox = new VBox(20, text, button); 
+            vbox.setAlignment(Pos.CENTER);
+            vbox.setStyle("-fx-background-color: lightblue;");
+            vbox.setPrefSize(1500, 1000); 
+            vbox.setPadding(new Insets(100, 400, 400, 100));
+
+            Scene scene = new Scene(vbox, 1500, 1000);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Go Fish");
+            primaryStage.setMaximized(true); 
+            primaryStage.show();
         
     	}
     	
@@ -451,7 +495,7 @@ public class goFishGame extends Application {
         Scene scene = new Scene(layout, 1500, 1000);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Go Fish");
-        primaryStage.setMaximized(true); 
+        primaryStage.setMaximized(true); // or setFullScreen(true);
         primaryStage.show();
 
 
