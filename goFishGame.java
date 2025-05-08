@@ -140,7 +140,28 @@ public class goFishGame extends Application {
       	primaryStage.setMaximized(true);
         primaryStage.show();
     }
-    
+    private void winMenu(ActionEvent event) {
+        System.out.println("Win condition met, showing win menu...");
+       
+        Label title = new Label("Player 1 Wins!!!");
+        title.setStyle("-fx-font-size: 24px;");
+
+        Button playAgain = new Button("Play Again?");
+        playAgain.setOnAction(this::playButton);
+
+        Button backToMenu = new Button("Back to Menu");
+        backToMenu.setOnAction(this::backToMenu);
+
+        VBox layout = new VBox(15, title, playAgain, backToMenu);
+        layout.setAlignment(Pos.TOP_CENTER);
+        layout.setStyle("-fx-alignment: center; -fx-padding: 30;-fx-background-color: lightblue;");
+
+        primaryStage.setTitle("Go Fish");
+        primaryStage.setScene(new Scene(layout, 1300, 1000));
+      	primaryStage.setMaximized(true);
+        primaryStage.show();
+    }
+    //Clears cards, makes new deck, initiates scores. Starts game.
     private void startGame(ActionEvent e) {
     	playersCards.clear();
     	manager = new GoFishManager(amountPlayers);
@@ -153,7 +174,7 @@ public class goFishGame extends Application {
     	    	
     	startTurn();  	
     }
-    
+    // Starts players turn
     private void startTurn() {
     	playerOneCards = playersCards.get(0);
     	playerCards opponentCards = playersCards.get(1);
@@ -169,7 +190,7 @@ public class goFishGame extends Application {
     	
     	pickPlayer();
     }
-
+    //Goes to a screen where the current player is able to pick a player to ask for other cards from
     private void pickPlayer() {
     		FlowPane centerPane = new FlowPane();
 //    	    System.out.print(manager.getCurrentPlayer());
@@ -229,7 +250,7 @@ public class goFishGame extends Application {
     
 
 
-    
+    // Goes to a screen where the player picks a card to ask the other player for
     private void pickCardForAsk() {
     	FlowPane pane = new FlowPane();
     	GridPane grid = new GridPane();
@@ -347,7 +368,7 @@ public class goFishGame extends Application {
    	checkWin();
 
 }
-    
+    //Intended to go in the middle as a way to show who got four of a kind
     private void allRankFound() {
     	VBox box = new VBox();
     	Text text = new Text("Four of a Rank found by " + manager.getCurrentPlayer());
@@ -365,7 +386,8 @@ public class goFishGame extends Application {
         primaryStage.show();
     	
     }
-    
+    //Goes in the middle of everyones turns as an intermediary to give time to switch
+
     private void nextTurnIntermediary() {
     	if(!matchFound) {
 
@@ -418,7 +440,10 @@ public class goFishGame extends Application {
     
     	
     }
+    
+    //Goes in the middle of everyones turns as an intermediary to give time to switch. This one is an action event so I can feed it into a different method
     private void nextTurnIntermediary(ActionEvent event) {
+    	// This leads the player to a no match found screen
     	if(!matchFound) {
 
     	Label message = new Label("No match, go fish");
@@ -442,7 +467,7 @@ public class goFishGame extends Application {
         primaryStage.setMaximized(true); 
         primaryStage.show();
      	}
-    	
+    	// This leads the player to a matchFoudn screen
     	else {
     		Text text = new Text();
         	text.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));   
@@ -501,41 +526,16 @@ public class goFishGame extends Application {
 
         onePlayerButton = new Button("1 Player");
         twoPlayerButton = new Button("2 Players");
-        threePlayerButton = new Button("3 Players");
-        fourPlayerButton = new Button("4 Players");
-
+//        threePlayerButton = new Button("3 Players");
+//        fourPlayerButton = new Button("4 Players");
+        onePlayerButton.setOnAction(this::winMenu);
         twoPlayerButton.setOnAction(e -> {
         	amountPlayers = 2;
         	startGame(e);
         });
-        threePlayerButton.setOnAction(e -> {
-        	amountPlayers = 3;
-        	startGame(e);
-        });
-        fourPlayerButton.setOnAction(e -> {
-            amountPlayers = 4; 
-            startGame(e);
-        });
 
-        layout.getChildren().addAll(onePlayerButton, twoPlayerButton, threePlayerButton, fourPlayerButton);
+        layout.getChildren().addAll(onePlayerButton, twoPlayerButton);
         
-    }
-
-    private void quitButton(ActionEvent event) {
-        primaryStage.close();
-    }
-
-    private void playerChoice(ActionEvent event) {
-      //  Button source = (Button) event.getSource();
-        //String text = source.getText();
-       
-        Label label = new Label("Game started with " + "" + " players!");
-        Button backButton = new Button("Back to Menu");
-        backButton.setOnAction(this::backToMenu);
-
-        VBox layout = new VBox(20, label, backButton);
-        layout.setStyle("-fx-alignment: center; -fx-padding: 30; -fx-background-color: lightblue;");
-        primaryStage.setScene(new Scene(layout, 300, 300));
     }
     
     private void drawCard(int playerIndex) {
@@ -544,6 +544,10 @@ public class goFishGame extends Application {
         } else {
             System.out.println("Deck is empty, cannot draw any more cards.");
         }
+    }
+
+    private void quitButton(ActionEvent event) {
+        primaryStage.close();
     }
     
 
