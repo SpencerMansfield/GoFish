@@ -172,29 +172,45 @@ public class goFishGame extends Application {
     }
 
     private void pickPlayer() {
-    	    GridPane grid = new GridPane();
+    	   // GridPane grid = new GridPane();
     	    System.out.print(manager.getCurrentPlayer());
-          	primaryStage.setMaximized(true);
-
-        	primaryStage.setScene(new Scene(grid, 1500, 1000));
-          	primaryStage.setTitle("Go Fish");
-        	primaryStage.show();
+    	   
     	    
     	    for(int i=0; i < amountPlayers; i++) {
     	    	int index = i;
     	    	if (i != manager.getCurrentPlayer()) {
-    	    		Button button = new Button("Player: " + (i + 1));
+    	    		
+    	    		
+    	    		Button button = new Button("Continue");
         	    	button.setOnAction(e -> {
           	    		playerPicked = index;
         	    		pickCardForAsk();
         	    	});
-        	    	grid.add(button, i, 0);
-        	    	grid.setAlignment(Pos.CENTER);
-        	    	grid.setStyle("-fx-background-color: lightblue");
-     
-        	    	grid.setPadding(new Insets(100, 400, 400, 100));
+        	    	Text message = new Text("Player " + (i+1));
+        	    	VBox vbox = new VBox(20, message, button);
+        	    	vbox.setAlignment(Pos.CENTER);
+        	    	vbox.setStyle("-fx-background-color: lightblue;");
+        	    	 
+        	    	 message.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));   
+        	     	   message.setFill(Color.AQUA);
+        	     	    message.setStrokeWidth(2); 
+        	     	   message.setStroke(Color.BLUE);
+        	    	 vbox.setPadding(new Insets(100, 400, 400, 100));
+        	        vbox.setPrefSize(1500, 1000); 
+//        	    	grid.add(button, i, 0);
+//        	    	grid.add(new TextField("Player " +(i+1)), i, 1);
+//        	    	grid.setAlignment(Pos.CENTER);
+//        	    	grid.setStyle("-fx-background-color: lightblue");
+//     
+//        	    	grid.setPadding(new Insets(100, 400, 400, 100));
+        	        Scene scene = new Scene(vbox, 1500, 1000);
+                    primaryStage.setScene(scene);
+                    primaryStage.setTitle("Go Fish");
+                    primaryStage.setMaximized(true); 
+                    primaryStage.show();
         	    	}
-    	    	}}
+    	    	}
+    	    }
     	    	
 //        	System.out.print(manager.getCurrentPlayer());
 //          	primaryStage.setMaximized(true);
@@ -435,7 +451,7 @@ public class goFishGame extends Application {
         Scene scene = new Scene(layout, 1500, 1000);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Go Fish");
-        primaryStage.setMaximized(true); // or setFullScreen(true);
+        primaryStage.setMaximized(true); 
         primaryStage.show();
 
 
